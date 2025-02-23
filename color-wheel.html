@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind Color Wheel</title>
+  <script src="./index.global.js"></script>
+  <style>
+    .color-wheel {
+      position: relative;
+      width: 400px;
+      height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .color-dot {
+      position: absolute;
+      width: 10%;
+      height: 10%;
+      border-radius: 50%;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+      margin: 10px;
+    }
+  </style>
+</head>
+
+<body class="flex items-center justify-center min-h-screen bg-gray-900">
+  <div class="color-wheel" id="colorWheel"></div>
+  <script>
+    let twcolors = [
+      "red", "orange", "amber", "yellow", "lime", "green", "emerald", "teal", "cyan", "sky", "blue", "indigo", "violet", "purple", "fuchsia", "pink", "rose", "slate", "gray", "zinc", "neutral", "stone"
+    ];
+    
+    const shades = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
+    
+    const colorWheel = document.getElementById("colorWheel");
+    let totalColors = twcolors.length * shades.length;
+    
+    twcolors.forEach((color, colorIndex) => {
+      shades.forEach((shade, shadeIndex) => {
+        const angle = ((colorIndex * shades.length + shadeIndex) / totalColors) * 360;
+        const colorDot = document.createElement("div");
+        colorDot.className = `color-dot bg-${color}-${shade}`;
+        colorDot.style.transform = `rotate(${angle}deg) translate(150px) rotate(-${angle}deg)`;
+        colorWheel.appendChild(colorDot);
+      });
+    });
+  </script>
+</body>
+
+</html>
