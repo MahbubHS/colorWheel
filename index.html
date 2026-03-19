@@ -16,7 +16,7 @@
   </select>
   
   <h1 id="page-title" class="absolute top-32 text-2xl font-bold text-white">Color Picker</h1>
-  <svg id="circle-svg" viewBox="0 0 500 500" class="w-full max-w-md"></svg>
+  <svg id="circle-svg" viewBox="0 0 500 500" class="w-full"></svg>
   
   <div id="display" class="absolute bottom-5 text-white *:font-mono">
     <p id="background"></p>
@@ -42,13 +42,19 @@
       if (mode === 'normal') {
         display.classList.remove(...display.classList);
         display.classList.add('hidden');
+        document.body.classList.remove(...document.body.classList);
+        document.body.classList.add('flex', 'justify-center', 'items-center', 'h-screen', 'bg-gray-900', 'relative');
+        const title = document.getElementById('page-title');
+        title.classList.remove(...title.classList);
+        title.classList.add('absolute', 'top-32', 'text-2xl', 'font-bold', 'text-white');
+        textClass = "text-white";
       } else {
         display.classList.remove(...display.classList);
         display.classList.add('absolute', '*:font-mono', 'bottom-5', textClass);
       }
     });
     
-    for (let i = 0; i <= shadesL; i++) {
+    for (let i = 0; i < shadesL; i++) {
       let currentShade = shades[i];
       for (let j = 0; j < colorsL; j++) {
         let startAngle = (j * 2 * Math.PI) / colorsL;
@@ -63,43 +69,49 @@
         path.setAttribute("stroke", "black");
         path.setAttribute("stroke-width", ".5");
         
-        if (i == shadesL) {
-          path.setAttribute("class", "stroke-gray-900 fill-gray-900 stroke-1 saad stroke-cap-round stroke-join-miter");
-        } else {
-          path.setAttribute("class", `fill-${colors[j % colorsL]}-${currentShade} hover:opacity-80 transition-all duration-200 cursor-pointer stroke-[.02px] stroke-current stroke-cap-round stroke-join-miter`);
-          path.addEventListener('click', () => {
-            const colorClass = `bg-${colors[j % colorsL]}-${currentShade}`;
+        path.setAttribute("class", `fill-${colors[j % colorsL]}-${currentShade} hover:opacity-80 transition-all duration-200 cursor-pointer stroke-[.02px] stroke-current stroke-cap-round stroke-join-miter`);
+        path.addEventListener('click', () => {
+          const selectedColor = `${colors[j % colorsL]}-${currentShade}`;
+          const colorClass = `bg-${selectedColor}`;
+          
+          if (mode === 'color-picker') {
+            navigator.clipboard.writeText(selectedColor);
             
-            if (mode === 'color-picker') {
-              navigator.clipboard.writeText(`${colors[j % colorsL]}-${currentShade}`);
-              
-            } else if (mode === 'bg') {
-              document.body.classList.remove(...document.body.classList);
-              document.body.classList.add('flex', 'justify-center', 'items-center', 'h-screen', colorClass);
-              
-              const last10Paths = Array.from(document.querySelectorAll('path')).slice(-26);
-              last10Paths.forEach(path => {
-                path.removeAttribute('class');
-                path.setAttribute('class', `stroke-${colorClass} fill-${colorClass} stroke-1 stroke-cap-round stroke-join-miter`);
-              });
-              document.getElementById('background').innerText = `Background : ${colors[j % colorsL]}-${currentShade}`;
-              
-            } else if (mode === 'text') {
-              const title = document.getElementById('page-title');
-              textClass = `text-${colors[j % colorsL]}-${currentShade}`;
-              title.classList.remove(...title.classList);
-              title.classList.add('absolute', 'top-32', 'text-2xl', 'font-bold', textClass);
-              
-              display.classList.remove(...display.classList);
-              display.classList.add('absolute', '*:font-mono', 'bottom-5', textClass);
-              document.getElementById('text').innerText = `Color : ${colors[j % colorsL]}-${currentShade}`;
-            }
-          });
-        }
+          } else if (mode === 'bg') {
+            document.body.classList.remove(...document.body.classList);
+            document.body.classList.add('flex', 'justify-center', 'items-center', 'h-screen', colorClass);
+            
+            const last26Paths = Array.from(document.querySelectorAll('path')).slice(-26);
+            last26Paths.forEach(path => {
+              path.removeAttribute('class');
+              path.setAttribute('class', `fill-${selectedColor} stroke-${selectedColor} stroke-1 stroke-cap-round stroke-join-miter`);
+            });
+            document.getElementById('background').innerText = `Background : ${selectedColor}`;
+            
+          } else if (mode === 'text') {
+            const title = document.getElementById('page-title');
+            textClass = `text-${selectedColor}`;
+            title.classList.remove(...title.classList);
+            title.classList.add('absolute', 'top-32', 'text-2xl', 'font-bold', textClass);
+            
+            display.classList.remove(...display.classList);
+            display.classList.add('absolute', '*:font-mono', 'bottom-5', textClass);
+            document.getElementById('text').innerText = `Color : ${selectedColor}`;
+          }
+        });
         
         svg.appendChild(path);
       }
       radius -= 20;
+    }
+    
+    // Add center
+    for (let j = 0; j < colorsL; j++) {
+      let centerPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      let centerD = `M ${centerX} ${centerY} L ${centerX} ${centerY} A 0 0 0 0 1 ${centerX} ${centerY} Z`;
+      centerPath.setAttribute("d", centerD);
+      centerPath.setAttribute("class", "stroke-gray-900 fill-gray-900 stroke-1 stroke-cap-round stroke-join-miter");
+      svg.appendChild(centerPath);
     }
   </script>
 </body>
