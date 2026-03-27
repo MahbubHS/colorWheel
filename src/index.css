@@ -13,10 +13,18 @@
  *   bg-*              (page background)
  *   text-*            (DemoText preview)
  */
-@source inline("fill-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}");
-@source inline("stroke-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}");
-@source inline("bg-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}");
-@source inline("text-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}");
+@source inline(
+  'fill-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}'
+);
+@source inline(
+  'stroke-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}'
+);
+@source inline(
+  'bg-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}'
+);
+@source inline(
+  'text-{red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose,slate,gray,zinc,neutral,stone,mauve,olive,taupe,mist}-{50,100,200,300,400,500,600,700,800,900,950}'
+);
 
 /* Kill all SVG focus outlines */
 svg,
@@ -144,6 +152,19 @@ svg * {
 }
 
 @layer base {
+  /*
+   * Height propagation — the full chain must have explicit height for
+   * flex-1 children inside App to receive their correct dimensions.
+   * Without this, h-svh/h-screen on the App shell is the only height
+   * anchor and on unsupported browsers the flex tree collapses.
+   */
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
@@ -153,13 +174,4 @@ svg * {
   html {
     @apply font-sans;
   }
-}
-
-/*
- * h-svh fallback — svh (small viewport height) fixes the mobile browser
- * address bar issue where 100vh includes the browser chrome. If the browser
- * does not support svh units, fall back to 100vh.
- */
-@supports not (height: 100svh) {
-  .h-svh { height: 100vh; }
 }

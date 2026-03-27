@@ -42,7 +42,7 @@ const Header = memo(function Header({ mode, onModeChange }: Props) {
         <SelectTrigger className="w-32 shrink-0 sm:w-40">
           <SelectValue placeholder="Mode" />
         </SelectTrigger>
-        <SelectContent position="popper" sideOffset={6}>
+        <SelectContent className="bg-black/2" position="popper" sideOffset={1}>
           {MODE_KEYS.map((key) => (
             <SelectItem key={key} value={key}>
               {MODES[key].icon} {MODES[key].label}

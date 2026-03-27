@@ -157,7 +157,7 @@ export default function App() {
        * bgClass transitions via Tailwind transition-colors.
        */}
       <div
-        className={`flex h-svh w-screen flex-col overflow-hidden font-sora transition-colors duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] select-none ${bgClass} `}
+        className={`flex h-full w-full flex-col overflow-hidden font-sora transition-colors duration-700 ease-[cubic-bezier(0.4,0,0.2,1)] select-none ${bgClass} `}
       >
         <Backdrop />
 

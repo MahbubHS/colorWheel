@@ -48,14 +48,14 @@ const DemoText = memo(function DemoText({ textClass, mode }: Props) {
       <p
         className={`mt-3 text-center text-sm leading-relaxed opacity-70 transition-colors duration-500 ${textClass} `}
       >
-        Tailwind CSS v4 · 26 colors · 11 shades · OKLCH
+        Tailwind CSS v4 · 26 colors · 11 shades
       </p>
 
       {/* Alphabet sample — desktop only */}
       <p
         className={`mt-3 hidden text-center font-mono text-xs tracking-widest opacity-40 transition-colors duration-500 lg:block ${textClass} `}
       >
-        Aa Bb Cc Dd Ee Ff Gg Hh Ii Jj
+        Aa Bb Cc Dd Ee 0123456789
       </p>
     </div>
   );

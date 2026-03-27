@@ -92,9 +92,8 @@ const WheelSVG = memo(function WheelSVG({ bgFillClass, onSegClick }: Props) {
        * absolute inset-0 — fills the flex cell completely.
        * The SVG's visual position is fully decoupled from siblings.
        * p-3/p-4/p-6 — breathing room that scales with screen size.
-       * absolute inset-0 flex items-center justify-center p-1 sm:p-2 lg:p-3 -translate-y-4 sm:-translate-y-6 lg:-translate-y-8
        */}
-      <div className="absolute inset-0 flex items-center justify-center p-1 sm:p-2 lg:p-3 -translate-y-4 sm:-translate-y-6 lg:-translate-y-8">
+      <div className="absolute inset-0 flex items-center justify-center p-3 sm:p-4 lg:p-6">
         {/* Ambient ring — GSAP breathe target */}
         <div
           ref={ringRef}
@@ -141,7 +140,7 @@ const WheelSVG = memo(function WheelSVG({ bgFillClass, onSegClick }: Props) {
                 <path
                   key={seg.key}
                   d={seg.d}
-                  className={`fill-${seg.twName} cursor-pointer stroke-black/20 stroke-[0.2]`}
+                  className={`fill-${seg.twName} cursor-pointer stroke-black/20 [stroke-width:0.6]`}
                   onClick={(e) => handlePathClick(e, seg)}
                   role="button"
                   aria-label={seg.twName}
