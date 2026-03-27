@@ -1,0 +1,80 @@
+name: 🏷️ Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: 'Pre-release label (leave blank for stable)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Bump & Tag Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Type-check
+        run: npm run type-check
+
+      - name: 🔎 Lint
+        run: npm run lint
+
+      - name: 🏗️ Build (dry-run before tagging)
+        run: npm run build
+
+      - name: 🔢 Bump version in package.json
+        id: version
+        run: |
+          BUMP="${{ github.event.inputs.bump }}"
+          PRE="${{ github.event.inputs.prerelease }}"
+
+          if [ -n "$PRE" ]; then
+            NEW_VERSION=$(npm version "pre${BUMP}" --preid="$PRE" --no-git-tag-version)
+          else
+            NEW_VERSION=$(npm version "$BUMP" --no-git-tag-version)
+          fi
+
+          # npm version outputs "v1.2.3" — strip the "v" for the tag
+          TAG="${NEW_VERSION}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Bumped to $TAG"
+
+      - name: 💾 Commit version bump
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json
+          git commit -m "chore(release): bump version to ${{ steps.version.outputs.tag }} [skip ci]"
+          git push origin main
+
+      - name: 🏷️ Create and push tag
+        run: |
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"
