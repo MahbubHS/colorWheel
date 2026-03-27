@@ -1,0 +1,82 @@
+# .github/dependabot.yml
+# Keeps npm packages and GitHub Actions up to date automatically.
+
+version: 2
+
+updates:
+  # ── npm (production + dev dependencies) ─────────────────────────────────────
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: UTC
+    open-pull-requests-limit: 8
+    labels:
+      - dependencies
+      - automated
+    commit-message:
+      prefix: 'chore(deps)'
+    groups:
+      # Batch all Tailwind-related packages into one PR
+      tailwind:
+        patterns:
+          - 'tailwindcss'
+          - '@tailwindcss/*'
+          - 'tw-animate-css'
+      # Batch all shadcn / Radix UI packages
+      radix-shadcn:
+        patterns:
+          - 'radix-ui'
+          - '@radix-ui/*'
+          - 'shadcn'
+          - 'class-variance-authority'
+      # Batch React + types
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - '@types/react'
+          - '@types/react-dom'
+      # Batch TypeScript toolchain
+      typescript-toolchain:
+        patterns:
+          - 'typescript'
+          - 'typescript-eslint'
+          - '@types/*'
+      # Batch ESLint ecosystem
+      eslint:
+        patterns:
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
+      # Batch Prettier ecosystem
+      prettier:
+        patterns:
+          - 'prettier'
+          - 'prettier-*'
+      # Batch Vite ecosystem
+      vite:
+        patterns:
+          - 'vite'
+          - '@vitejs/*'
+
+  # ── GitHub Actions ───────────────────────────────────────────────────────────
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: '09:00'
+      timezone: UTC
+    open-pull-requests-limit: 4
+    labels:
+      - ci
+      - automated
+    commit-message:
+      prefix: 'ci(deps)'
+    groups:
+      actions:
+        patterns:
+          - '*'

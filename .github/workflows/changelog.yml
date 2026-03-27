@@ -1,0 +1,123 @@
+name: 📝 Auto Changelog
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Tag to generate changelog for (e.g. v1.2.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout (full history)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🏷️ Resolve tag
+        id: tag
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: 📋 Generate changelog entry
+        id: changelog
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          PREV_TAG=$(git describe --tags --abbrev=0 "${TAG}^" 2>/dev/null || echo "")
+          DATE=$(date +%Y-%m-%d)
+
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="${PREV_TAG}..${TAG}"
+            echo "Comparing ${PREV_TAG} → ${TAG}"
+          else
+            RANGE="${TAG}"
+            echo "First release: ${TAG}"
+          fi
+
+          # ── Section helpers ─────────────────────────────────────────────────
+          section() {
+            local label="$1"; local pattern="$2"
+            local lines
+            lines=$(git log "$RANGE" --pretty=format:"%s (%h)" \
+              | grep -iE "^${pattern}" || true)
+            if [ -n "$lines" ]; then
+              echo -e "\n### ${label}\n"
+              echo "$lines" | sed 's/^/- /'
+            fi
+          }
+
+          # ── Build markdown ──────────────────────────────────────────────────
+          {
+            echo "## [${TAG}] — ${DATE}"
+            echo ""
+            section "✨ Features"   "feat(\([^)]*\))?!?:"
+            section "🐛 Bug Fixes"  "fix(\([^)]*\))?!?:"
+            section "⚡ Performance" "perf(\([^)]*\))?!?:"
+            section "♻️ Refactors"  "refactor(\([^)]*\))?!?:"
+            section "🎨 Styling"    "style(\([^)]*\))?!?:"
+            section "🧪 Tests"      "test(\([^)]*\))?!?:"
+            section "📚 Docs"       "docs(\([^)]*\))?!?:"
+            section "🔧 Chores"     "chore(\([^)]*\))?!?:"
+            section "🏗️ Build"      "build(\([^)]*\))?!?:"
+            section "👷 CI"         "ci(\([^)]*\))?!?:"
+          } > /tmp/new_entry.md
+
+          cat /tmp/new_entry.md
+          echo "entry_file=/tmp/new_entry.md" >> "$GITHUB_OUTPUT"
+
+      - name: 📄 Prepend to CHANGELOG.md
+        run: |
+          ENTRY_FILE="${{ steps.changelog.outputs.entry_file }}"
+
+          if [ -f CHANGELOG.md ]; then
+            # Insert new entry after the first line (# Changelog heading)
+            HEAD=$(head -1 CHANGELOG.md)
+            TAIL=$(tail -n +2 CHANGELOG.md)
+            {
+              echo "$HEAD"
+              echo ""
+              cat "$ENTRY_FILE"
+              echo ""
+              echo "$TAIL"
+            } > CHANGELOG_NEW.md
+            mv CHANGELOG_NEW.md CHANGELOG.md
+          else
+            {
+              echo "# Changelog"
+              echo ""
+              echo "All notable changes to **Tailwind Color Wheel** are documented here."
+              echo "This project follows [Conventional Commits](https://www.conventionalcommits.org/)."
+              echo ""
+              cat "$ENTRY_FILE"
+            } > CHANGELOG.md
+          fi
+
+      - name: 💾 Commit & push CHANGELOG.md
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "docs: update CHANGELOG for ${{ steps.tag.outputs.tag }} [skip ci]" || \
+            echo "Nothing to commit — changelog already up to date"
+          git push origin HEAD:main
+
+      - name: 🏷️ Create / update GitHub Release with changelog body
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: ${{ steps.tag.outputs.tag }}
+          body_path: ${{ steps.changelog.outputs.entry_file }}
+          draft: false
+          prerelease: ${{ contains(steps.tag.outputs.tag, '-') }}
