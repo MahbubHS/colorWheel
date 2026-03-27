@@ -9,7 +9,7 @@ import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
   // 🧹 Global ignores
-  globalIgnores(['dist', 'node_modules', '.vite']),
+  globalIgnores(['dist', 'node_modules', '.vite', './components/ui']),
 
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
