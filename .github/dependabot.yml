@@ -1,82 +1,116 @@
-# .github/dependabot.yml
-# Keeps npm packages and GitHub Actions up to date automatically.
-
 version: 2
 
 updates:
-  # ── npm (production + dev dependencies) ─────────────────────────────────────
+  # ─────────────────────────────────────────────
+  # 📦 NPM (Highly optimized)
+  # ─────────────────────────────────────────────
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
       day: monday
-      time: '09:00'
+      time: "09:00"
       timezone: UTC
-    open-pull-requests-limit: 8
+
+    open-pull-requests-limit: 6
+
+    versioning-strategy: increase-if-necessary
+
+    rebase-strategy: auto
+
     labels:
       - dependencies
       - automated
-    commit-message:
-      prefix: 'chore(deps)'
-    groups:
-      # Batch all Tailwind-related packages into one PR
-      tailwind:
-        patterns:
-          - 'tailwindcss'
-          - '@tailwindcss/*'
-          - 'tw-animate-css'
-      # Batch all shadcn / Radix UI packages
-      radix-shadcn:
-        patterns:
-          - 'radix-ui'
-          - '@radix-ui/*'
-          - 'shadcn'
-          - 'class-variance-authority'
-      # Batch React + types
-      react:
-        patterns:
-          - 'react'
-          - 'react-dom'
-          - '@types/react'
-          - '@types/react-dom'
-      # Batch TypeScript toolchain
-      typescript-toolchain:
-        patterns:
-          - 'typescript'
-          - 'typescript-eslint'
-          - '@types/*'
-      # Batch ESLint ecosystem
-      eslint:
-        patterns:
-          - 'eslint'
-          - 'eslint-*'
-          - '@eslint/*'
-      # Batch Prettier ecosystem
-      prettier:
-        patterns:
-          - 'prettier'
-          - 'prettier-*'
-      # Batch Vite ecosystem
-      vite:
-        patterns:
-          - 'vite'
-          - '@vitejs/*'
 
-  # ── GitHub Actions ───────────────────────────────────────────────────────────
+    commit-message:
+      prefix: "chore(deps)"
+
+    reviewers:
+      - "@MahbubHS" # replace with your GitHub username
+
+    # 🧠 Smart grouping (low noise, high clarity)
+    groups:
+      # 🔒 Safe updates only (auto-merge friendly)
+      safe-updates:
+        update-types:
+          - patch
+          - minor
+
+      # ⚠️ Breaking changes isolated
+      major-updates:
+        update-types:
+          - major
+
+      # 🎨 UI stack
+      frontend-ui:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react*"
+          - "@radix-ui/*"
+          - "class-variance-authority"
+          - "clsx"
+          - "tailwindcss"
+          - "@tailwindcss/*"
+          - "tailwind-merge"
+
+      # ⚙️ Tooling
+      tooling:
+        patterns:
+          - "vite"
+          - "@vitejs/*"
+          - "typescript"
+          - "@typescript-eslint/*"
+          - "eslint*"
+          - "@eslint/*"
+          - "prettier*"
+
+    # 🚫 Reduce useless noise
+    ignore:
+      # Ignore major updates for dev tooling (you review manually)
+      - dependency-name: "@typescript-eslint/*"
+        update-types: ["version-update:semver-major"]
+
+      - dependency-name: "eslint*"
+        update-types: ["version-update:semver-major"]
+
+      - dependency-name: "vite"
+        update-types: ["version-update:semver-major"]
+
+      # Optional: ignore test-only libs (if you want ultra-clean PRs)
+      # - dependency-name: "jest*"
+      # - dependency-name: "@testing-library/*"
+
+
+  # ─────────────────────────────────────────────
+  # ⚙️ GitHub Actions (clean + safe)
+  # ─────────────────────────────────────────────
   - package-ecosystem: github-actions
     directory: /
+
     schedule:
       interval: weekly
       day: monday
-      time: '09:00'
+      time: "09:00"
       timezone: UTC
+
     open-pull-requests-limit: 4
+
     labels:
       - ci
       - automated
+
     commit-message:
-      prefix: 'ci(deps)'
+      prefix: "ci(deps)"
+
     groups:
-      actions:
-        patterns:
-          - '*'
+      # 🔒 Safe updates (recommended auto-merge)
+      safe-actions:
+        update-types:
+          - patch
+          - minor
+
+      # ⚠️ Breaking changes isolated
+      major-actions:
+        update-types:
+          - major
