@@ -27,7 +27,8 @@ jobs:
           cache: 'npm'
 
       - name: 📦 Install dependencies
-        run: npm ci
+        run: npm ci | npm install
+          
 
       # ── Type safety ──────────────────────────────────────────────────────────
       - name: 🔍 TypeScript type-check
