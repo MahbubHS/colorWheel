@@ -13,6 +13,7 @@ export default defineConfig({
       interval: 100, // only used if polling enabled
     },
   },
+  base:'/colorWheel/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
