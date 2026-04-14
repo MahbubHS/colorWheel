@@ -108,6 +108,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          npm run format CHANGELOG.md
           git add CHANGELOG.md
           git commit -m "docs: update CHANGELOG for ${{ steps.tag.outputs.tag }} [skip ci]" || \
             echo "Nothing to commit — changelog already up to date"
