@@ -1,10 +1,9 @@
 # Changelog
 
-All notable changes to **Tailwind Color Wheel** are documented here.
-This project follows [Conventional Commits](https://www.conventionalcommits.org/).
+All notable changes to **Tailwind Color Wheel** are documented here. This project follows
+[Conventional Commits](https://www.conventionalcommits.org/).
 
 ## [v1.0.0] — 2026-03-29
-
 
 ### ✨ Features
 
